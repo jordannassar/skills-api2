@@ -42,9 +42,9 @@ export const getPostById = async (req: any, res: Response) => {
 
 export const getAllPosts = async (req: any, res: Response) => {
     try {
-        const allPosts = await prisma.post.findMany();
+       // const allPosts = await prisma.post.findMany();
 
-        res.status(202).json(allPosts);
+        res.status(202).json('allPosts');
     } catch (error) {
         console.error(error);
         res.status(400).send('Could not get all posts');

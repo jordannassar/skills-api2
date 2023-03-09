@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../../Skills"
+		},
+		{
+			"path": "../../../marketplace"
 		}
 	],
 	"settings": {}
