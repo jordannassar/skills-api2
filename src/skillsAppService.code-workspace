@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../Skills"
+		},
+		{
+			"path": "../../quickwave-api"
+		}
+	],
+	"settings": {}
+}

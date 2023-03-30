@@ -10,7 +10,8 @@ const s3 = new AWS.S3({
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: any, res: Response) => {
+	console.log(await req.body.email);
 	try {
 		const user = await prisma.user.findUnique({
 			where: {
@@ -28,11 +29,11 @@ export const createUser = async (req: Request, res: Response) => {
 		(req.file &&
 			s3.upload(
 				{
-					Bucket: 'publicskillsbucket',
+					Bucket: 'skillspublicbucket',
 					Key: `${uuidv4()}.jpg`,
 					Body: req.file.buffer,
 				},
-				(error: any, s3data: any) => {
+				async (error: any, s3data: any) => {
 					if (error) {
 						console.log(error);
 					}
@@ -45,10 +46,11 @@ export const createUser = async (req: Request, res: Response) => {
 								salt,
 							);
 
-							const newUser = prisma.user
+							const newUser = await prisma.user
 								.create({
 									data: {
 										...req.body,
+										yearBorn: parseInt(req.body.yearBorn),
 										isAdmin: true,
 										password: hash,
 										avatarUrl: s3data.Location,
@@ -57,7 +59,8 @@ export const createUser = async (req: Request, res: Response) => {
 								.catch((error) => {
 									console.log(error);
 								});
-							res.status(201).send('New user is created');
+								console.log(await newUser)
+							res.status(201).send(await newUser);
 						} catch (error) {
 							console.error(error);
 							return res.status(500).send(error);

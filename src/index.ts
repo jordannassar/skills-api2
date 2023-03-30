@@ -25,10 +25,10 @@ app.use(cookieParser());
 
 app.options(
 	'*',
-	cors({ origin: 'exp:/172.20.10.10:19000', optionsSuccessStatus: 200 }),
+	cors({ origin: 'http://localhost:3000', optionsSuccessStatus: 200 }),
 );
 
-app.use(cors({ origin: 'exp:/172.20.10.10:19000', optionsSuccessStatus: 200 }));
+app.use(cors({ origin: 'http://localhost:3000', optionsSuccessStatus: 200 }));
 
 //USER
 app.use('/api/user', userRouter);
@@ -42,13 +42,20 @@ app.use('/api/post', postRouter);
 //CATEGORY
 app.use('/api/category', categoryRouter);
 
-var options = {
-	key: fs.readFileSync(__dirname + '/utils/certs/selfsigned.key'),
-	cert: fs.readFileSync(__dirname + '/utils/certs/selfsigned.crt')
-};
+//var options = {
+//	key: fs.readFileSync(__dirname + '/utils/certs/selfsigned.key'),
+//	cert: fs.readFileSync(__dirname + '/utils/certs/selfsigned.crt')
+//};
+//
+//var server = https.createServer(options, app);
+//
+//server.listen(port, () => {
+//	console.log('server starting on port : ' + port);
+//});
+//
 
-var server = https.createServer(options, app);
 
-server.listen(port, () => {
+app.listen(port, () => {
 	console.log('server starting on port : ' + port);
-});
+})
+
