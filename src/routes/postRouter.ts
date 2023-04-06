@@ -7,10 +7,16 @@ import {
 	getPostById,
 	updatePost,
 } from '../controllers/postController';
+import { formDataUtil } from '../utils/formDataUtil';
 
 const router = express.Router();
 
-router.post('/create', verifySessionToken, createPost);
+router.post(
+	'/create',
+	verifySessionToken,
+	formDataUtil.single('file'),
+	createPost,
+);
 
 router.get('/get', getAllPosts);
 

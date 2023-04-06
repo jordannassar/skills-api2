@@ -59,7 +59,7 @@ export const createUser = async (req: any, res: Response) => {
 								.catch((error) => {
 									console.log(error);
 								});
-								console.log(await newUser)
+							console.log(await newUser);
 							res.status(201).send(await newUser);
 						} catch (error) {
 							console.error(error);
@@ -114,9 +114,7 @@ export const loginUser = async (req: Request, res: Response) => {
 		);
 
 		return res
-			.cookie('session_token', token, {
-				httpOnly: true,
-			})
+			.header('session_token', token)
 			.status(200)
 			.send('Successfully logged in!, token ' + token);
 	} catch (error) {

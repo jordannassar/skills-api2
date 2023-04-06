@@ -8,28 +8,29 @@ datasource db {
 }
 
 model category {
-  id             Int        @id(map: "category_pkey") @default(autoincrement())
-  name           String     @db.VarChar(255)
-  parentId       Int
+  id       Int    @id(map: "category_pkey") @default(autoincrement())
+  name     String @unique @db.VarChar(255)
+  parentId Int?
   //icon           String     @db.VarChar(255)
-  category       category   @relation("categoryTocategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "catgeory_parentid_foreign")
-  other_category category[] @relation("categoryTocategory")
-  post           post[]
+  //category       category   @relation("categoryTocategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: //"catgeory_parentid_foreign")
+  //other_category category[] @relation("categoryTocategory")
+  post     post[]
 }
 
 model post {
-  id          Int           @id @default(autoincrement())
-  title       String        @db.VarChar(255)
-  details     String        @db.VarChar(255)
-  userId      Int
-  createdAt   DateTime?     @default(now()) @db.Date
-  updatedAt   DateTime?     @default(now()) @db.Date
-  type        Int           @db.SmallInt
-  categoryId  Int
-  category    category      @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_categoryid_foreign")
-  user        user          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_userid_foreign")
-  postLink    String?       @db.VarChar(255)
-  searchIndex searchIndex[]
+  id           Int           @id @default(autoincrement())
+  title        String        @db.VarChar(255)
+  details      String        @db.VarChar(255)
+  createdAt    DateTime?     @default(now()) @db.Date
+  updatedAt    DateTime?     @default(now()) @db.Date
+  type         Int           @db.SmallInt
+  userId       Int           @db.Integer
+  categoryName String
+  category     category?     @relation(fields: [categoryName], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "post_categoryname_foreign")
+  link         String?       @db.VarChar(255)
+  imageLink    String?       @db.VarChar(255)
+  searchIndex  searchIndex[]
+  user         user          @relation(fields: [userId], references: [id])
 }
 
 //model postLink {
@@ -39,7 +40,6 @@ model post {
 //  url    String @db.VarChar(255)
 //  post   post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "postlink_postid_foreign")
 //}
-
 model searchIndex {
   id     Int    @id @default(autoincrement())
   word   String @db.VarChar(255)
