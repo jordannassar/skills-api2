@@ -2,6 +2,14 @@ import prisma from '../utils/prismaClient';
 import { Response } from 'express';
 import { IGetUserAuthInfoRequest } from '../types/IGetUserAuthInfoRequest-type';
 import { user } from '../types/user-types';
+import * as AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
+
+const s3 = new AWS.S3({
+	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+
 export const getAllUsers = async (res: Response) => {
 	try {
 		const allUsers = await prisma.user.findMany({
@@ -23,7 +31,7 @@ export const getAllUsers = async (res: Response) => {
 };
 
 export const getUserById = async (
-	req: any, 
+	req: any,
 	//IGetUserAuthInfoRequest<user>,
 	res: Response,
 ) => {
@@ -38,7 +46,7 @@ export const getUserById = async (
 				avatarUrl: true,
 				bio: true,
 				email: true,
-				roles: true,
+				yearBorn: true,
 			},
 		});
 		if (!user) {
@@ -51,8 +59,33 @@ export const getUserById = async (
 	}
 };
 
+export const getUserByReqUser = async (req: any, res: Response) => {
+	try {
+		const user = await prisma.user.findUnique({
+			where: {
+				id: parseInt(req.user.id, 10),
+			},
+			select: {
+				id: true,
+				name: true,
+				avatarUrl: true,
+				bio: true,
+				email: true,
+				yearBorn: true,
+			},
+		});
+		if (!user) {
+			return res.status(405).send('User not found');
+		}
+		res.status(200).json(user);
+	} catch (error) {
+		console.error(error);
+		res.status(400).send('Could not get user');
+	}
+};
+
 export const deleteUserById = async (
-	req: any, 
+	req: any,
 	//IGetUserAuthInfoRequest<user>,
 	res: Response,
 ) => {
@@ -71,7 +104,7 @@ export const deleteUserById = async (
 };
 
 export const deleteAllUsers = async (
-	req: any, 
+	req: any,
 	//IGetUserAuthInfoRequest<user>,
 	res: Response,
 ) => {
@@ -90,18 +123,29 @@ export const deleteAllUsers = async (
 };
 
 export const updateUser = async (
-	req: any, 
+	req: any,
 	//IGetUserAuthInfoRequest<user>,
 	res: Response,
 ) => {
 	try {
+		const s3File =
+			req.file &&
+			(await s3
+				.upload({
+					Bucket: 'skillspublicbucket',
+					Key: `${uuidv4()}.jpg`,
+					Body: req.file.buffer,
+				})
+				.promise());
+
 		const updatedUser = await prisma.user.update({
 			where: {
-				id: parseInt(req.params.id, 10),
+				id: parseInt(req.user.id, 10),
 			},
 			data: {
 				...req.body,
-				roles: req.body.roles ? req.body.roles : undefined,
+				yearBorn: parseInt(req.body.yearBorn, 10),
+				avatarUrl: s3File && s3File.Location,
 			},
 		});
 		res.status(200).json(updatedUser);

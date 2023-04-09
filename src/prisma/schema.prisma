@@ -18,19 +18,24 @@ model category {
 }
 
 model post {
-  id           Int           @id @default(autoincrement())
-  title        String        @db.VarChar(255)
-  details      String        @db.VarChar(255)
-  createdAt    DateTime?     @default(now()) @db.Date
-  updatedAt    DateTime?     @default(now()) @db.Date
-  type         Int           @db.SmallInt
-  userId       Int           @db.Integer
-  categoryName String
-  category     category?     @relation(fields: [categoryName], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "post_categoryname_foreign")
-  link         String?       @db.VarChar(255)
-  imageLink    String?       @db.VarChar(255)
-  searchIndex  searchIndex[]
-  user         user          @relation(fields: [userId], references: [id])
+  id            Int           @id @default(autoincrement())
+  title         String        @db.VarChar(255)
+  details       String        @db.VarChar(255)
+  createdAt     DateTime?     @default(now()) @db.Date
+  updatedAt     DateTime?     @default(now()) @db.Date
+  type          Int           @db.SmallInt
+  userId        Int           @db.Integer
+  userYearBorn  Int?          @db.Integer
+  userEmail     String?       @db.VarChar(255)
+  userName      String?       @db.VarChar(255)
+  userAvatarUrl String?       @db.VarChar(255)
+  userBio       String?       @db.VarChar(255)
+  categoryName  String
+  category      category?     @relation(fields: [categoryName], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "post_categoryname_foreign")
+  link          String?       @db.VarChar(255)
+  imageLink     String?       @db.VarChar(255)
+  searchIndex   searchIndex[]
+  user          user          @relation(fields: [userId], references: [id])
 }
 
 //model postLink {

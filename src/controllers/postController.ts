@@ -22,6 +22,11 @@ export const createPost = async (req: any, res: Response) => {
 				.promise());
 		console.log(await s3File);
 		console.log(req.user.id + 'iddDIWJDJAIAWWHDIUWAIHIDH');
+		const user = await prisma.user.findUnique({
+			where: {
+				id: req.user.id,
+			},
+		});
 		const post = await prisma.post.create({
 			data: {
 				title: req.body.title,
@@ -39,9 +44,13 @@ export const createPost = async (req: any, res: Response) => {
 						id: req.user.id,
 					},
 				},
-				//searchIndex: req.body.searchIndex, // commented out because it is not yet implemented
 				link: req.body.link ? req.body.link : null,
 				imageLink: s3File ? s3File.Location : null,
+				userName: user?.name,
+				userYearBorn: user?.yearBorn,
+				userEmail: user?.email,
+				userAvatarUrl: user?.avatarUrl,
+				userBio: user?.bio,
 			},
 		});
 		console.log(post);
@@ -73,9 +82,20 @@ export const getPostById = async (req: any, res: Response) => {
 
 export const getAllPosts = async (req: any, res: Response) => {
 	try {
-		// const allPosts = await prisma.post.findMany();
+		const posts = await prisma.post.findMany({
+			orderBy: [
+				{
+					createdAt: 'desc',
+				},
+			],
+		});
 
-		res.status(202).json('allPosts');
+		if (!posts) {
+			return res.status(200).json('No posts found');
+		}
+
+		console.log(posts);
+		res.status(200).json(posts);
 	} catch (error) {
 		console.error(error);
 		res.status(400).send('Could not get all posts');
@@ -84,12 +104,24 @@ export const getAllPosts = async (req: any, res: Response) => {
 
 export const deletePost = async (req: any, res: Response) => {
 	try {
+		const post = await prisma.post.findUnique({
+			where: {
+				id: parseInt(req.params.id, 10),
+			},
+		});
+		if (post?.userId !== req.user.id) {
+			return res.status(401).send('Unauthorized');
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(400).send('Could not delete post');
+	}
+	try {
 		await prisma.post.delete({
 			where: {
 				id: parseInt(req.params.id, 10),
 			},
 		});
-
 		res.status(200).send('Post has been successfully deleted');
 	} catch (error) {
 		console.error(error);

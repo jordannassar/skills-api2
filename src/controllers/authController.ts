@@ -59,8 +59,19 @@ export const createUser = async (req: any, res: Response) => {
 								.catch((error) => {
 									console.log(error);
 								});
-							console.log(await newUser);
-							res.status(201).send(await newUser);
+
+							const token = jwt.sign(
+								{ id: newUser?.id, isAdmin: newUser?.isAdmin },
+								process.env.JWT_SECRET as string,
+								{
+									expiresIn: '3h',
+								},
+							);
+
+							res.header('session_token', token)
+								.header('userid', newUser?.id.toString())
+								.status(201)
+								.send(await newUser);
 						} catch (error) {
 							console.error(error);
 							return res.status(500).send(error);
@@ -115,6 +126,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 		return res
 			.header('session_token', token)
+			.header('userid', user.id.toString())
 			.status(200)
 			.send('Successfully logged in!, token ' + token);
 	} catch (error) {

@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "post" ALTER COLUMN "userEmail" DROP NOT NULL,
+ALTER COLUMN "userName" DROP NOT NULL,
+ALTER COLUMN "userYearBorn" DROP NOT NULL;

@@ -19,7 +19,7 @@ const verifyUser = (
 	) {
 		next();
 	} else {
-		return res.status(403).send('You are not authorized');
+		return res.status(403).send({ message: 'You are not authorized' });
 	}
 };
 
@@ -32,7 +32,7 @@ const verifyAdmin = (
 	if (req.jwtUser.isAdmin) {
 		next();
 	} else {
-		return res.status(403).send('You are not admin');
+		return res.status(403).send({ message: 'You are not authorized' });
 	}
 };
 
@@ -42,12 +42,10 @@ export const verifySessionToken = (
 	res: Response,
 	next: any,
 ) => {
-
-
 	const token = req.headers.session_token;
 
 	if (!token) {
-		return res.status(401).send('Not authorized!');
+		return res.status(401).send({ message: 'No token provided' });
 	}
 
 	jwt.verify(
@@ -56,7 +54,7 @@ export const verifySessionToken = (
 		async (err: any, decodedToken: any) => {
 			try {
 				if (err) {
-					return res.status(403).send('Token is not valid!');
+					return res.status(403).send({ message: 'Invalid token' });
 				}
 
 				req.user = decodedToken;

@@ -18,7 +18,7 @@ router.post(
 	createPost,
 );
 
-router.get('/get', getAllPosts);
+router.get('/get', verifySessionToken, getAllPosts);
 
 router.get('/get/:id', verifySessionToken, getPostById);
 
